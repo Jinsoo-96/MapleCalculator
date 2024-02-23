@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>하이퍼 스탯 계산기</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+
+      html,
+      body {
+        font-family: "Poppins", sans-serif;
+        width: 100%;
+        height: 100%;
+        background-color: #f5efee;
+      }
+
+      .bigTitle {
+        background-color: #ffe88e;
+        padding: 27px 10px;
+        border-bottom: 2px solid #000;
+      }
+
+      .bigTitle .wrap {
+        max-width: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0 auto;
+      }
+
+      .flip {
+        border-bottom: 2px solid #000;
+      }
+
+      .sflip {
+        padding: 7px;
+        border-bottom: 2px dotted #b6b6b6;
+      }
+
+      .bigTitle h1 {
+        font-size: 2rem;
+        font-weight: 600;
+      }
+
+      .container {
+        padding: 15px 20px;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      input {
+        font-family: "Poppins", sans-serif;
+        -o-appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding: 10px;
+        outline: none;
+        width: 1000%;
+        border: 2px solid #000;
+        box-sizing: border-box;
+        font-size: 16px;
+        font-weight: 1200;
+        border-radius: 0;
+      }
+
+      input::placeholder {
+        color: #bcbbbb;
+      }
+
+      span {
+        font-size: 17px;
+      }
+
+      .left {
+        padding-left: 170px;
+      }
+
+      .trans {
+        background-color: transparent; /* 배경색 투명 */
+        border: transparent;
+      }
+
+      input::-ms-expand {
+        display: none;
+      }
+
+      .resetIcon {
+        outline: none;
+        border: 2px solid #000;
+        width: 36px;
+        height: 36px;
+        padding: 4px;
+        cursor: pointer;
+        border-radius: 100px;
+        background-color: #f5875e;
+        transition: all 0.2s;
+      }
+      .resetIcon:hover {
+        transform: rotateZ(360deg) scale(1.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/prop-types@15.7.2/prop-types.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const root = document.getElementById("root");
+    const points = [1, 2, 4, 8, 10, 15, 20, 25, 30, 35, 50, 65, 80, 95, 110];
+    const sums = [
+      1, 3, 7, 15, 25, 40, 60, 85, 115, 150, 200, 265, 345, 440, 550,
+    ];
+
+    const LV = { text: "레벨", id: "lv" };
+    const idList = [
+      {
+        text: "STR",
+        id: "STR",
+        sp: [
+          30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420,
+          450,
+        ],
+      },
+      {
+        text: "DEX",
+        id: "DEX",
+        sp: [
+          30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420,
+          450,
+        ],
+      },
+      {
+        text: "INT",
+        id: "INT",
+        sp: [
+          30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420,
+          450,
+        ],
+      },
+      {
+        text: "LUK",
+        id: "LUK",
+        sp: [
+          30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420,
+          450,
+        ],
+      },
+      {
+        text: "HP(%)",
+        id: "HP",
+        sp: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30],
+      },
+      {
+        text: "MP(%)",
+        id: "MP",
+        sp: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30],
+      },
+      {
+        text: "DF/TF/PP (포스)",
+        id: "DF_TF_PP_영력",
+        sp: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+      },
+      {
+        text: "크리티컬 확률(%)",
+        id: "크리티컬확률",
+        sp: [1, 2, 3, 4, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25],
+      },
+      {
+        text: "크리티컬 데미지(%)",
+        id: "크리티컬데미지",
+        sp: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      },
+      {
+        text: "방어율 무시(%)",
+        id: "방어율_무시",
+        sp: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45],
+      },
+      {
+        text: "데미지(%)",
+        id: "데미지",
+        sp: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45],
+      },
+      {
+        text: "보스 공격시 데미지(%)",
+        id: "보스데미지",
+        sp: [3, 6, 9, 12, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55],
+      },
+      {
+        text: "일반 데미지(%)",
+        id: "일반데미지",
+        sp: [3, 6, 9, 12, 15, 19, 23, 27, 31, 35, 39, 43, 47, 51, 55],
+      },
+      {
+        text: "공격력/마력",
+        id: "공격력_마력",
+        sp: [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45],
+      },
+      {
+        text: "획득 경험치(%)",
+        id: "획득_경험치",
+        sp: [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 6, 7, 8, 9, 10],
+      },
+      {
+        text: "아케인 포스",
+        id: "아케인_포스",
+        sp: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100],
+      },
+    ];
+
+    function hyperStats(lv) {
+      let point = 0;
+      if (isNaN(lv) || lv < 140 || lv > 300) return 0; // 범위 밖 레벨 처리
+      if (lv === 300) return 1698;
+
+      const [loops, n] = [Math.floor((lv - 140) / 10), (lv - 140) % 10];
+      for (let i = 0; i < loops; i++) {
+        point += (i + 3) * 10;
+      }
+      point += (loops + 3) * (n + 1);
+
+      return point;
+    }
+
+    function calculateHyperStatPoints(level) {
+      if (level < 1 || level > 15) {
+        return [0, 0];
+      }
+      return [points[level - 1], sums[[level - 1]]];
+    }
+
+    function validateValue({ value, minValue, maxValue }) {
+      let newValue = parseInt(value, 10);
+      if (isNaN(newValue)) {
+        return minValue; // 숫자가 아닌 입력 처리
+      } else if (newValue < minValue) {
+        return minValue; // 최소값 제한
+      } else if (newValue > maxValue) {
+        return maxValue; // 최대값 제한
+      } else {
+        return newValue;
+      }
+    }
+
+    function LevelCheck({ id, onChange, placeholder }) {
+      const [level, setLevel] = React.useState(0);
+
+      const handleLevelChange = (e) => {
+        let newLevel = validateValue({
+          value: e.target.value,
+          minValue: 0,
+          maxValue: 300,
+        });
+
+        setLevel(newLevel);
+
+        onChange({ total: hyperStats(newLevel), id: id });
+      };
+
+      return (
+        <input
+          id={id.id}
+          style={{ width: "39%", height: "35px", fontSize: "33px" }}
+          type="number"
+          value={level === 0 ? "" : level}
+          onChange={handleLevelChange}
+          placeholder={placeholder}
+          className="trans"
+        />
+      );
+    }
+
+    function OptionPoint({ id, onChange }) {
+      const [optionPoint, setOptionPoint] = React.useState(0); // 단일 옵션 포인트를 위한 상태
+      const [sPoint, setSpoint] = React.useState(0);
+
+      const handleChange = (e) => {
+        const newPoint = validateValue({
+          value: e.target.value,
+          minValue: 0,
+          maxValue: id.id === "DF_TF_PP_영력" ? 10 : 15,
+        });
+        setOptionPoint(newPoint); // 옵션 포인트 상태 업데이트
+        setSpoint(id.sp[newPoint - 1]);
+        onChange({ item: calculateHyperStatPoints(newPoint)[1], id: id });
+      };
+
+      return (
+        <div
+          className="sflip"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 20,
+          }}
+        >
+          <label htmlFor={id.id} style={{ fontSize: "20px" }}>
+            {id.text}
+          </label>
+          <span
+            style={{
+              marginLeft: "auto",
+              paddingRight: "30px",
+              fontSize: "20px",
+            }}
+          >
+            {sPoint === 0 ? "" : sPoint}
+          </span>
+          <input
+            id={id.id}
+            style={{
+              width: "17%",
+              height: "30px",
+              fontSize: "23px",
+              textAlign: "right",
+            }}
+            type="number"
+            value={optionPoint === 0 ? "" : optionPoint}
+            onChange={handleChange}
+            placeholder={id.id === "DF_TF_PP_영력" ? "0~10" : "0~15"}
+            className="trans"
+          />
+        </div>
+      );
+    }
+
+    function App() {
+      const [totalPoints, setTotalPoints] = React.useState(0);
+
+      // 새로운 총 포인트 계산
+
+      const printTotalPoint = ({ total = false, item = false, id = false }) => {
+        // 보여지는 포인트를 업데이트하기 전에 필요한 포인트를 계산
+        let printPoint = total
+          ? total - item
+          : hyperStats(parseInt(document.querySelector(`#${LV.id}`).value)) -
+            item;
+
+        idList.forEach((element) => {
+          if (element.id !== id.id) {
+            printPoint -= calculateHyperStatPoints(
+              document.querySelector(`#${element.id}`).value
+            )[1];
+          }
+        });
+
+        setTotalPoints(printPoint);
+      };
+
+      return (
+        <div className="wrap">
+          <div className="bigTitle">
+            <div className="wrap">
+              <h1>하이퍼 스탯 계산기</h1>
+              <button
+                onClick={() => window.location.reload()}
+                className="resetIcon"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  x="0px"
+                  y="0px"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M 2 2 L 4.9394531 4.9394531 C 3.1262684 6.7482143 2 9.2427079 2 12 C 2 17.514 6.486 22 12 22 C 17.514 22 22 17.514 22 12 C 22 6.486 17.514 2 12 2 L 12 4 C 16.411 4 20 7.589 20 12 C 20 16.411 16.411 20 12 20 C 7.589 20 4 16.411 4 12 C 4 9.7940092 4.9004767 7.7972757 6.3496094 6.3496094 L 9 9 L 9 2 L 2 2 z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="container">
+            <div
+              className="flip"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 20,
+              }}
+            >
+              <label htmlFor={LV.id} style={{ fontSize: "33px" }}>
+                Lv.
+              </label>
+              <LevelCheck
+                id={LV}
+                onChange={printTotalPoint}
+                placeholder="140 ~ 300"
+              />
+
+              <p style={{ fontSize: "27px" }}>
+                남은 포인트 :{"  " + totalPoints}
+              </p>
+            </div>
+          </div>
+          <div className="container">
+            <div
+              className="sflip"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <span style={{ paddingLeft: "70px" }}>옵션</span>
+              <span style={{ paddingLeft: "150px" }}>증가량</span>
+              <span style={{ paddingRight: "20px" }}>포인트</span>
+            </div>
+            {idList.map((ids, index) => (
+              <OptionPoint key={index} id={ids} onChange={printTotalPoint} />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, root);
+    // !flipped 대신에 flipped === false로도 사용가능!
+  </script>
+</html>
