@@ -25,7 +25,7 @@
       }
 
       .bigTitle .wrap {
-        max-width: 500px;
+        max-width: 370px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -48,7 +48,7 @@
 
       .container {
         padding: 15px 20px;
-        max-width: 500px;
+        max-width: 370px;
         margin: 0 auto;
       }
 
@@ -267,7 +267,7 @@
       return (
         <input
           id={id.id}
-          style={{ width: "39%", height: "35px", fontSize: "33px" }}
+          style={{ width: "37%", height: "30px", fontSize: "23px" }}
           type="number"
           value={level === 0 ? "" : level}
           onChange={handleLevelChange}
@@ -302,14 +302,14 @@
             gap: 20,
           }}
         >
-          <label htmlFor={id.id} style={{ fontSize: "20px" }}>
+          <label htmlFor={id.id} style={{ fontSize: "15px" }}>
             {id.text}
           </label>
           <span
             style={{
               marginLeft: "auto",
-              paddingRight: "30px",
-              fontSize: "20px",
+              paddingRight: "10px",
+              fontSize: "15px",
             }}
           >
             {sPoint === 0 ? "" : sPoint}
@@ -317,9 +317,9 @@
           <input
             id={id.id}
             style={{
-              width: "17%",
-              height: "30px",
-              fontSize: "23px",
+              width: "20%",
+              height: "20px",
+              fontSize: "15px",
               textAlign: "right",
             }}
             type="number"
@@ -387,7 +387,7 @@
                 gap: 20,
               }}
             >
-              <label htmlFor={LV.id} style={{ fontSize: "33px" }}>
+              <label htmlFor={LV.id} style={{ fontSize: "20px" }}>
                 Lv.
               </label>
               <LevelCheck
@@ -396,7 +396,7 @@
                 placeholder="140 ~ 300"
               />
 
-              <p style={{ fontSize: "27px" }}>
+              <p style={{ fontSize: "17px" }}>
                 남은 포인트 :{"  " + totalPoints}
               </p>
             </div>
@@ -411,8 +411,8 @@
                 gap: 10,
               }}
             >
-              <span style={{ paddingLeft: "70px" }}>옵션</span>
-              <span style={{ paddingLeft: "150px" }}>증가량</span>
+              <span style={{ paddingLeft: "30px" }}>옵션</span>
+              <span style={{ paddingLeft: "120px" }}>증가량</span>
               <span style={{ paddingRight: "20px" }}>포인트</span>
             </div>
             {idList.map((ids, index) => (
